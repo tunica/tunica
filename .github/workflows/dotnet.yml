@@ -1,0 +1,44 @@
+name: .NET
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+    - name: Download askalono binaries    
+      uses: robinraju/release-downloader@v1
+      with:
+        repository:  amzn/askalono
+        latest: true
+        fileName: askalono-Windows.zip
+        out-file-path: Artifacts
+    - name: Extract askalono binaries
+      uses: Amadevus/pwsh-script@v2.0.1
+      with:
+        script: |
+          Remove-Item 'Tunica/askalono.exe'
+          Expand-Archive -LiteralPath 'Artifacts/askalono-Windows.zip' -DestinationPath 'Tunica'
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    - name: Test
+      run: dotnet test --no-build --configuration Release --verbosity normal
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: tunica
+        path: Tunica/bin/Release
