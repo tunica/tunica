@@ -9,28 +9,14 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 3.1.x
-    - name: Download askalono binaries    
-      uses: robinraju/release-downloader@v1
-      with:
-        repository:  amzn/askalono
-        latest: true
-        fileName: askalono-Windows.zip
-        out-file-path: Artifacts
-    - name: Extract askalono binaries
-      uses: Amadevus/pwsh-script@v2.0.1
-      with:
-        script: |
-          Remove-Item 'Tunica/askalono.exe'
-          Expand-Archive -LiteralPath 'Artifacts/askalono-Windows.zip' -DestinationPath 'Tunica'
+        dotnet-version: 6
+        dotnet-quality: 'ga'
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
