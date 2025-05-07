@@ -1,1 +1,1 @@
-# AN EMPTY PROJECT
+A project without a license file.
